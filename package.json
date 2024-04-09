@@ -1,0 +1,28 @@
+{
+  "name": "proyecto2_repo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/Server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/Server.js",
+    "dev": "nodemon src/Server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SOA-Project2/hour-suggestion-cloud-function.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SOA-Project2/hour-suggestion-cloud-function/issues"
+  },
+  "homepage": "https://github.com/SOA-Project2/hour-suggestion-cloud-function#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
