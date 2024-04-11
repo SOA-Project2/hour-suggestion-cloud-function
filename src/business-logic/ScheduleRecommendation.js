@@ -20,7 +20,7 @@ const getRecommendation = (req, res, next) => {
         // Check if there are more available hours on the same day
         if (timeIndex < data[day].length - 1) {
             const nextTime = data[day][timeIndex + 1];
-            return res.status(statusCodes.OK).json({"message": "The hour requested is not available. Available time for the same day",  "day": day, "time": nextTime });
+            return res.status(statusCodes.OK).json({"available": false, "message": "The hour requested is not available. Available time for the same day",  "day": day, "time": nextTime });
         }
         else {
             // Find the next available day and time
@@ -35,14 +35,14 @@ const getRecommendation = (req, res, next) => {
             }
             if (nextDay) {
                 const nextTime = data[nextDay][0];
-                return res.status(statusCodes.OK).json({"message": "There are no more available hours for the requested day. This our next available day and time",  "day": nextDay, "time": nextTime });
+                return res.status(statusCodes.OK).json({"available": false, "message": "There are no more available hours for the requested day. This our next available day and time",  "day": nextDay, "time": nextTime });
             } else {
                 return res.status(statusCodes.NOT_FOUND).json({ error: "No available days" });
             }
         }
     }
 
-    var response = {"day": day, "time": time,  "message": "The provided day and time are available for reservation" };
+    var response = {"available": true, "message": "The provided day and time are available for reservation", "day": day, "time": time};
 
     return res.status(statusCodes.OK).json(response);
 };
