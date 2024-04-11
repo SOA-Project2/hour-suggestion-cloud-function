@@ -35,7 +35,7 @@ const getRecommendation = (req, res, next) => {
             }
             if (nextDay) {
                 const nextTime = data[nextDay][0];
-                return res.status(statusCodes.OK).json({"message": "There are no more available hours for the requested day. This is an available day and time",  "day": nextDay, "time": nextTime });
+                return res.status(statusCodes.OK).json({"message": "There are no more available hours for the requested day. This our next available day and time",  "day": nextDay, "time": nextTime });
             } else {
                 return res.status(statusCodes.NOT_FOUND).json({ error: "No available days" });
             }
