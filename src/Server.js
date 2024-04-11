@@ -4,11 +4,11 @@ const PORT = 3000;
 const app = express();
 const router = express.Router();
 
-//const errorHandler = require("./errors/ErrorHandler");
-//router.use(errorHandler.queryValidatorMiddleware);
+const errorHandler = require("./errors/ErrorHandler");
+router.use("/schedule/:day?/:time?", errorHandler.queryValidatorMiddleware);
 
 const scheduleRecommendation = require("./business-logic/ScheduleRecommendation");
-router.get("/schedule/:day/:time", scheduleRecommendation.getRecommendation);
+router.get("/schedule/:day?/:time?", scheduleRecommendation.getRecommendation);
 
 app.use(router);
 

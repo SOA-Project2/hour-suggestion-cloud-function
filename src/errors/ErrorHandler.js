@@ -1,4 +1,4 @@
-const statusCodes = require("../constants/StatusCodes");
+const STATUS_CODES = require("../constants/StatusCodes");
 
 /**
  * Handle custom errors
@@ -6,30 +6,29 @@ const statusCodes = require("../constants/StatusCodes");
  * @param {*} res
  * @param {*} next
  * @returns
-*/
+ */
 const queryValidatorMiddleware = (req, res, next) => {
-    const query = req.query;
-    const queryParams = Object.keys(query);
-    const validParams = ["meal", "drink", "dessert"];
+    
+  const { day, time } = req.params;
   
-    if (queryParams.length > 2 || queryParams.length === 0) {
-      const err = new Error("Invalid number of query parameters. Must be between 1 and 2.");
-      err.status = statusCodes.BAD_REQUEST;
-      return next(err);
-    }
-    
-    for (const param of queryParams) {
-      if (!validParams.includes(param)) {
-        const err = new Error(`Invalid query parameter value '${param}'. Must be one of: meal, drink, dessert.`);
-        err.status = statusCodes.BAD_REQUEST;
-        return next(err);
-      }
-    }
-    
-    // Proceed to controllers
-    next();
-  };
+  console.log(req.params);
 
-  module.exports = {
+  // Validate day and time parameters
+  if (!day || !time) {
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ error: "Day and time parameters are required" });
+  }
+  // Validate that day is not a number
+  if (!isNaN(day)) {
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ error: "Day parameter must not be a number" });
+  }
+  // Validate that time parameter does not contain alphabetic letters
+  if (/[a-zA-Z]/.test(time)) {
+      return res.status(STATUS_CODES.BAD_REQUEST).json({ error: "Time parameter must not contain alphabetic letters" });
+  }
+  // Proceed to controllers if parameters are valid
+  next();
+};
+
+module.exports = {
     queryValidatorMiddleware,
-  };
+};
