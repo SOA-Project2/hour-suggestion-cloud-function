@@ -1,24 +1,28 @@
-const fs = require("fs").promises;
-const path = require("path");
+const fs = require("fs");
+const path = require("path"); // Import the path module
 const data = require("./schedule.json");
 const statusCodes = require("../constants/StatusCodes");
 
-const updateSchedule = async (day, time) => {
-    // Find the index of the requested time in the list of available hours
-    const timeIndex = data[day].indexOf(time);
+const getRecommendation = (req, res, next) => {
+    const query = req.query; // query params
+    const { day, time } = req.params;
 
     // Validate if the day is correctly written
     if (!data[day]) {
-        throw new Error("Invalid day");
+        return res.status(statusCodes.BAD_REQUEST).json({ error: "Invalid day" });
     }
 
+    // Find the index of the requested time in the list of available hours
+    const timeIndex = data[day].indexOf(time);
+
     // If the requested time is not available, find the next available time
-    else if (timeIndex === -1) {
+    if (timeIndex === -1) {
         // Check if there are more available hours on the same day
-        if (data[day].length > 0) {
-            const nextTime = data[day][0];
-            throw new Error(`The hour requested is not available. Recommended available time for the same day: ${nextTime}`);
-        } else {
+        if (timeIndex < data[day].length - 1) {
+            const nextTime = data[day][timeIndex + 1];
+            return res.status(statusCodes.OK).json({"message": "The hour requested is not available. Available time for the same day",  "day": day, "time": nextTime });
+        }
+        else {
             // Find the next available day and time
             let nextDay;
             for (let i = 1; i <= 6; i++) {
@@ -31,31 +35,16 @@ const updateSchedule = async (day, time) => {
             }
             if (nextDay) {
                 const nextTime = data[nextDay][0];
-                throw new Error(`There are no more available hours for the requested day. Recommended day and time: ${nextDay} ${nextTime}`);
+                return res.status(statusCodes.OK).json({"message": "There are no more available hours for the requested day. This is an available day and time",  "day": nextDay, "time": nextTime });
             } else {
-                throw new Error("No available days");
+                return res.status(statusCodes.NOT_FOUND).json({ error: "No available days" });
             }
         }
-    } else {
-        // Remove the hour from the schedule
-        data[day].splice(timeIndex, 1);
-
-        // Update the schedule.json file
-        const filePath = path.join(__dirname, "schedule.json");
-        await fs.writeFile(filePath, JSON.stringify(data, null, 2));
     }
-};
 
-const getRecommendation = async (req, res, next) => {
-    const query = req.query; // query params
-    const { day, time } = req.params;
+    var response = {"day": day, "time": time,  "message": "The provided day and time are available for reservation" };
 
-    try {
-        await updateSchedule(day, time);
-        return res.status(statusCodes.OK).json({ "message": "The provided day and time are available for reservation", "day": day, "time": time });
-    } catch (error) {
-        return res.status(statusCodes.BAD_REQUEST).json({ error: error.message });
-    }
+    return res.status(statusCodes.OK).json(response);
 };
 
 module.exports = {
